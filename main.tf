@@ -41,7 +41,7 @@ resource "aws_vpc" "vpc" {
 resource "aws_subnet" "subnet_public1" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = "172.31.0.0/24"
-
+  availability_zone = local.az_a_name
   tags = {
     Name = join(local.separator_symbol, [local.vpc_name,local.subnet_public1_name,local.az_a_name])
     Environment = local.environment
@@ -51,7 +51,7 @@ resource "aws_subnet" "subnet_public1" {
 resource "aws_subnet" "subnet_public2" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = "172.31.1.0/24"
-
+  availability_zone = local.az_b_name
   tags = {
     Name = join(local.separator_symbol, [local.vpc_name,local.subnet_public2_name,local.az_b_name])
     Environment = local.environment
@@ -61,7 +61,7 @@ resource "aws_subnet" "subnet_public2" {
 resource "aws_subnet" "subnet_private1" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = "172.31.2.0/24"
-
+  availability_zone = local.az_a_name
   tags = {
     Name = join(local.separator_symbol, [local.vpc_name, local.subnet_private1_name, local.az_a_name]) 
     Environment = local.environment
@@ -71,7 +71,7 @@ resource "aws_subnet" "subnet_private1" {
 resource "aws_subnet" "subnet_private2" {
   vpc_id     = aws_vpc.vpc.id
   cidr_block = "172.31.3.0/24"
-
+  availability_zone = local.az_b_name
   tags = {
     Name = join(local.separator_symbol, [local.vpc_name, local.subnet_private2_name, local.az_b_name])
     Environment = local.environment
