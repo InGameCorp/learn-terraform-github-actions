@@ -150,6 +150,11 @@ resource "aws_route_table" "route_table_private1" {
   }
 }
 
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.subnet_private1.id
+  route_table_id = aws_route_table.route_table_private1.id
+}
+
 output "vpc_id" {
   value = aws_vpc.vpc.id
 }
