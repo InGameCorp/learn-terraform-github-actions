@@ -135,11 +135,6 @@ resource "aws_route_table" "route_table_private1" {
   vpc_id = aws_vpc.vpc.id
 
   route {
-    destination_prefix_list_id = local.pl_destination_id
-    vpc_endpoint_id = aws_vpc_endpoint.s3.id
-  }
-
-  route {
     cidr_block = "172.31.0.0/16"
     gateway_id = "local"
   }
@@ -157,11 +152,6 @@ resource "aws_route_table_association" "rtb_private_1a" {
 
 resource "aws_route_table" "route_table_private2" {
   vpc_id = aws_vpc.vpc.id
-
-  route {
-    destination_prefix_list_id = local.pl_destination_id
-    vpc_endpoint_id = aws_vpc_endpoint.s3.id
-  }
 
   route {
     cidr_block = "172.31.0.0/16"
