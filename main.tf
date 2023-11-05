@@ -43,7 +43,7 @@ resource "aws_subnet" "subnet_public1" {
   cidr_block = "172.31.0.0/24"
 
   tags = {
-    Name = concat([local.vpc_name,local.separator_symbol,local.subnet_public1_name,local.separator_symbol,local.az_a_name])
+    Name = join(local.separator_symbol, [local.vpc_name,local.subnet_public1_name,local.az_a_name])
     Environment = local.environment
   }
 }
@@ -53,7 +53,7 @@ resource "aws_subnet" "subnet_public2" {
   cidr_block = "172.31.1.0/24"
 
   tags = {
-    Name = concat([local.vpc_name,local.separator_symbol,local.subnet_public2_name,local.separator_symbol,local.az_b_name])
+    Name = join(local.separator_symbol, [local.vpc_name,local.subnet_public2_name,local.az_b_name])
     Environment = local.environment
   }
 }
