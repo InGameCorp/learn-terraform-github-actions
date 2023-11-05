@@ -17,6 +17,8 @@ locals {
   subnet_public2_name = "subnet-public2"
   subnet_private1_name = "subnet-private1"
   subnet_private2_name = "subnet-private2"
+  igw_name = "igwue1ingamesbx001"
+  rtb_public_name = "rtb-public"
   az_a_name = "us-east-1a"
   az_b_name = "us-east-1b"
   cognito_name = "upnaeu1ingamesbx001"
@@ -76,6 +78,46 @@ resource "aws_subnet" "subnet_private2" {
     Name = join(local.separator_symbol, [local.vpc_name, local.subnet_private2_name, local.az_b_name])
     Environment = local.environment
   }
+}
+
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = local.igw_name
+    Environment = local.environment
+  }
+}
+
+resource "aws_route_table" "route_table_public" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  route {
+    cidr_block = "172.31.0.0/16"
+    gateway_id = "local"
+  }
+
+  tags = {
+    Name = join(local.separator_symbol, [local.vpc_name,local.rtb_public_name])
+    Environment = local.environment
+  }
+}
+
+resource "aws_route_table_association" "rtb_public_1a" {
+  subnet_id      = aws_subnet.subnet_public1.id
+  route_table_id = aws_route_table.route_table_public.id
+  depends_on = [ aws_route_table.route_table_public ]
+}
+
+resource "aws_route_table_association" "rtb_public_1b" {
+  subnet_id      = aws_subnet.subnet_public2.id
+  route_table_id = aws_route_table.route_table_public.id
+  depends_on = [ aws_route_table.route_table_public ]
 }
 
 output "vpc_id" {
