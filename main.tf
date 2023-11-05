@@ -150,9 +150,33 @@ resource "aws_route_table" "route_table_private1" {
   }
 }
 
-resource "aws_route_table_association" "a" {
+resource "aws_route_table_association" "rtb_private_1a" {
   subnet_id      = aws_subnet.subnet_private1.id
   route_table_id = aws_route_table.route_table_private1.id
+}
+
+resource "aws_route_table" "route_table_private2" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    destination_prefix_list_id = local.pl_destination_id
+    vpc_endpoint_id = aws_vpc_endpoint.s3.id
+  }
+
+  route {
+    cidr_block = "172.31.0.0/16"
+    gateway_id = "local"
+  }
+
+  tags = {
+    Name = join(local.separator_symbol, [local.vpc_name,local.rtb_private2_name,local.az_b_name])
+    Environment = local.environment
+  }
+}
+
+resource "aws_route_table_association" "rtb_private_1b" {
+  subnet_id      = aws_subnet.subnet_private2.id
+  route_table_id = aws_route_table.route_table_private2.id
 }
 
 output "vpc_id" {
