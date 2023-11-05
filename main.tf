@@ -19,13 +19,15 @@ locals {
   subnet_private2_name = "subnet-private2"
   igw_name = "igwue1ingamesbx001"
   rtb_public_name = "rtb-public"
+  rtb_private1_name = "rtb-private1"
+  rtb_private2_name = "rtb-private2"
   az_a_name = "us-east-1a"
   az_b_name = "us-east-1b"
   cognito_name = "upnaeu1ingamesbx001"
   rds_name = "rdspue1ingamesbx001"
   ec2_pivot_name = "ec2lue1ingamesbx001"
   separator_symbol = "-"
-
+  pl_destination_id = "pl-63a5400a"
 }
 
 provider "aws" {
@@ -118,6 +120,34 @@ resource "aws_route_table_association" "rtb_public_1b" {
   subnet_id      = aws_subnet.subnet_public2.id
   route_table_id = aws_route_table.route_table_public.id
   depends_on = [ aws_route_table.route_table_public ]
+}
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id       = aws_vpc.vpc.id
+  service_name = "com.amazonaws.us-east-1.s3"
+
+  tags = {
+    Environment = local.environment
+  }
+}
+
+resource "aws_route_table" "route_table_private1" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    destination_prefix_list_id = local.pl_destination_id
+    vpc_endpoint_id = aws_vpc_endpoint.s3.id
+  }
+
+  route {
+    cidr_block = "172.31.0.0/16"
+    gateway_id = "local"
+  }
+
+  tags = {
+    Name = join(local.separator_symbol, [local.vpc_name,local.rtb_private1_name,local.az_a_name])
+    Environment = local.environment
+  }
 }
 
 output "vpc_id" {
