@@ -174,9 +174,19 @@ resource "aws_route_table" "route_table_private2" {
   }
 }
 
-resource "aws_route_table_association" "rtb_private_1b" {
+resource "aws_route_table_association" "rtb_private_2b" {
   subnet_id      = aws_subnet.subnet_private2.id
   route_table_id = aws_route_table.route_table_private2.id
+}
+
+resource "aws_vpc_endpoint_route_table_association" "rtb_private_1a" {
+  route_table_id  = aws_route_table.route_table_private1.id
+  vpc_endpoint_id = aws_vpc_endpoint.s3.id
+}
+
+resource "aws_vpc_endpoint_route_table_association" "rtb_private_2b" {
+  route_table_id  = aws_route_table.route_table_private2.id
+  vpc_endpoint_id = aws_vpc_endpoint.s3.id
 }
 
 output "vpc_id" {
