@@ -239,7 +239,7 @@ resource "aws_security_group_rule" "egress_allow_ec2_to_rds" {
   security_group_id = aws_security_group.allow_ec2_to_rds.id
 }
 
-resource "aws_security_group_rule" "egress_allow_rds_to_ec2" {
+resource "aws_security_group_rule" "ingress_allow_rds_to_ec2" {
   type              = "ingress"
   from_port         = 0
   to_port           = 5423
