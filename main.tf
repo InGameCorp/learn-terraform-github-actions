@@ -28,6 +28,8 @@ locals {
   ec2_pivot_name = "ec2lue1ingamesbx001"
   separator_symbol = "-"
   pl_destination_id = "pl-63a5400a"
+  sg_ec2_to_rds_name = "sgec2rdsue1ingamesbx001"
+  sg_rds_to_ec2_name = "sgrdsec2ue1ingamesbx001"
 }
 
 provider "aws" {
@@ -204,6 +206,46 @@ resource "aws_security_group" "allow_tls" {
     Name = local.sg_ec2_name
     Environment = local.environment
   }
+}
+
+resource "aws_security_group" "allow_ec2_to_rds" {
+  name        = local.sg_ec2_to_rds_name
+  description = "Allow RDS outbound traffic"
+  vpc_id      = aws_vpc.vpc.id
+
+  tags = {
+    Name = local.sg_ec2_to_rds_name
+    Environment = local.environment
+  }
+}
+
+resource "aws_security_group" "allow_rds_to_ec2" {
+  name        = local.sg_rds_to_ec2_name
+  description = "Allow RDS inbound traffic"
+  vpc_id      = aws_vpc.vpc.id
+
+  tags = {
+    Name = local.sg_rds_to_ec2_name
+    Environment = local.environment
+  }
+}
+
+resource "aws_security_group_rule" "egress_allow_ec2_to_rds" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 5423
+  protocol          = "tcp"
+  source_security_group_id = aws_security_group.allow_rds_to_ec2.id
+  security_group_id = aws_security_group.allow_ec2_to_rds.id
+}
+
+resource "aws_security_group_rule" "egress_allow_rds_to_ec2" {
+  type              = "ingress"
+  from_port         = 0
+  to_port           = 5423
+  protocol          = "tcp"
+  source_security_group_id = aws_security_group.allow_ec2_to_rds.id
+  security_group_id = aws_security_group.allow_rds_to_ec2.id
 }
 
 output "vpc_id" {
