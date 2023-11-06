@@ -24,7 +24,7 @@ locals {
   az_a_name = "us-east-1a"
   az_b_name = "us-east-1b"
   cognito_name = "upnaeu1ingamesbx001"
-  rds_name = "rdspue1ingamesbx001"
+  sg_ec2_name = "sge2ue1ingamesbx001" 
   ec2_pivot_name = "ec2lue1ingamesbx001"
   separator_symbol = "-"
   pl_destination_id = "pl-63a5400a"
@@ -36,6 +36,7 @@ provider "aws" {
 
 resource "aws_vpc" "vpc" {
   cidr_block = "172.31.0.0/16"
+  enable_dns_hostnames = true
   tags = {
     Name = local.vpc_name
     Environment = local.environment
@@ -177,6 +178,32 @@ resource "aws_vpc_endpoint_route_table_association" "rtb_private_1a" {
 resource "aws_vpc_endpoint_route_table_association" "rtb_private_2b" {
   route_table_id  = aws_route_table.route_table_private2.id
   vpc_endpoint_id = aws_vpc_endpoint.s3.id
+}
+
+resource "aws_security_group" "allow_tls" {
+  name        = local.sg_ec2_name
+  description = "Allow SSH inbound traffic"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    description      = "SSH from VPC"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = local.sg_ec2_name
+    Environment = local.environment
+  }
 }
 
 output "vpc_id" {
